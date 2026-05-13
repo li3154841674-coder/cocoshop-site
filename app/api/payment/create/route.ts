@@ -58,52 +58,38 @@ async function insertPendingOrder(params: {
  const supabaseAdmin = getSupabaseAdmin()
 
  const dbData = {
-   title: title,
-   total_fee: totalFee,
-   payment_method: paymentMethod,
-   customer_name: shippingName,
-   phone: shippingPhone,
-   address: shippingAddress,
-   pet_size: size,
-   tshirt_color: tshirtColor,
-   image_url: generatedImageUrl,
+   title: params.title || '观象高定宠物服装',
+   total_fee: Number(params.totalFee) || 69.9,
+   amount: Number(params.totalFee) || 69.9,
+   payment_method: params.paymentMethod || 'wechat',
+   customer_name: params.shippingName,
+   phone: params.shippingPhone,
+   address: params.shippingAddress,
+   pet_size: params.size,
+   tshirt_color: params.tshirtColor,
+   image_url: params.generatedImageUrl,
    status: 'pending',
-   payment_status: 'pending',
+   payment_status: 'pending'
  }
 
  console.log('[雷达 3b] 数据库映射后的字段:', dbData)
 
- const errors: string[] = []
+ const { data, error: insertError } = await (supabaseAdmin as any)
+   .from('orders')
+   .insert([dbData])
+   .select('id')
+   .maybeSingle()
 
- for (let i = 0; i < 20; i++) {
-   const { data, error } = await (supabaseAdmin as any)
-     .from('orders')
-     .insert([dbData])
-     .select('id')
-     .maybeSingle()
-
-   if (!error) {
-     const orderId = data?.id
-     if (!orderId) {
-       throw new Error('Insert order succeeded but id missing from response.')
-     }
-     return { orderId }
-   }
-
-   const message = error.message || 'Unknown insert error'
-   errors.push(message)
-
-   const match = message.match(/Could not find the '([^']+)' column/)
-   const missingColumn = match?.[1]
-
-   if (missingColumn && missingColumn in dbData) {
-     delete (dbData as Record<string, any>)[missingColumn]
-     continue
-   }
-   break
+ if (insertError) {
+   throw new Error(insertError.message || 'Unknown insert error')
  }
 
- throw new Error(`Insert orders failed. ${errors.join(' | ')}`)
+ const orderId = data?.id
+ if (!orderId) {
+   throw new Error('Insert order succeeded but id missing from response.')
+ }
+
+ return { orderId }
 }
 
 export async function POST(request: NextRequest) {
