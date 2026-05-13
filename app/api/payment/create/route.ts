@@ -55,43 +55,30 @@ async function insertPendingOrder(params: {
    size,
  } = params
 
- const supabase = getSupabaseAdmin()
+ const supabaseAdmin = getSupabaseAdmin()
 
- const basePayload: Record<string, any> = {
+ const dbData = {
+   title: title,
+   total_fee: totalFee,
+   payment_method: paymentMethod,
+   customer_name: shippingName,
+   phone: shippingPhone,
+   address: shippingAddress,
+   pet_size: size,
+   tshirt_color: tshirtColor,
+   image_url: generatedImageUrl,
    status: 'pending',
-   customer_name: shippingName || null,
-   phone: shippingPhone || null,
-   address: shippingAddress || null,
-   image_url: generatedImageUrl || null,
-   pet_size: size || null,
+   payment_status: 'pending',
  }
 
- if (title) basePayload.title = title
- if (Number.isFinite(totalFee)) {
-   basePayload.total_fee = totalFee
-   basePayload.amount = totalFee
- }
- if (paymentMethod) {
-   basePayload.payment_method = paymentMethod
-   basePayload.payment_status = 'pending'
- }
- if (tshirtColor) basePayload.tshirt_color = tshirtColor
-
- console.log('[雷达 3b] 数据库映射后的字段:', {
-   total_fee: basePayload.total_fee,
-   payment_method: basePayload.payment_method,
-   customer_name: basePayload.customer_name,
-   phone: basePayload.phone,
-   address: basePayload.address,
-   pet_size: basePayload.pet_size,
- })
+ console.log('[雷达 3b] 数据库映射后的字段:', dbData)
 
  const errors: string[] = []
 
  for (let i = 0; i < 20; i++) {
-   const { data, error } = await (supabase as any)
+   const { data, error } = await (supabaseAdmin as any)
      .from('orders')
-     .insert(basePayload)
+     .insert([dbData])
      .select('id')
      .maybeSingle()
 
