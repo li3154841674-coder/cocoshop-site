@@ -96,8 +96,8 @@ async function insertPendingOrder(params: {
    const match = message.match(/Could not find the '([^']+)' column/)
    const missingColumn = match?.[1]
 
-   if (missingColumn && missingColumn in basePayload) {
-     delete basePayload[missingColumn]
+   if (missingColumn && missingColumn in dbData) {
+     delete (dbData as Record<string, any>)[missingColumn]
      continue
    }
    break
