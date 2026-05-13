@@ -77,6 +77,15 @@ async function insertPendingOrder(params: {
  }
  if (tshirtColor) basePayload.tshirt_color = tshirtColor
 
+ console.log('[雷达 3b] 数据库映射后的字段:', {
+   total_fee: basePayload.total_fee,
+   payment_method: basePayload.payment_method,
+   customer_name: basePayload.customer_name,
+   phone: basePayload.phone,
+   address: basePayload.address,
+   pet_size: basePayload.pet_size,
+ })
+
  const errors: string[] = []
 
  for (let i = 0; i < 20; i++) {
