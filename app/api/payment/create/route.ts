@@ -175,6 +175,7 @@ export async function POST(request: NextRequest) {
      console.log("[雷达 4] 数据库写入成功，准备调用虎皮椒签名...")
    } catch (insertError) {
      console.error("❌ [致命错误] 数据库写入失败:", insertError)
+     console.error('Database Error:', insertError)
      return NextResponse.json({ errcode: -11, errmsg: insertError instanceof Error ? insertError.message : String(insertError), error: '创建订单写库失败' }, { status: 500 })
    }
 
