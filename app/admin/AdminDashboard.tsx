@@ -181,7 +181,7 @@ export default function AdminDashboard() {
                                   : 'bg-gray-100 text-gray-700 ring-1 ring-gray-200',
                             ].join(' ')}
                           >
-                            {pay === 'paid' ? '已支付' : pay === 'pending' ? '未支付' : '未知'}
+                           {String(pay).trim().toLowerCase() === 'paid' ? '已支付' : '未支付'}
                           </span>
                           <div className="mt-2 text-xs text-gray-500">当前状态: {fulfillment}</div>
                         </td>
